@@ -22,8 +22,7 @@ app.use("/api/v1/users", usersRouter);
 app.use(Express.static(`${__dirname}/public`));
 
 app.all("*", (req, res, next) => {
-  new AppError(`Can't find ${req.originalUrl} on this server!`);
-  next();
+  return next(new AppError(`Can't find ${req.originalUrl} on this server!`));
 });
 
 app.use(globalErrorHandler);

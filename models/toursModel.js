@@ -4,6 +4,7 @@ const tourSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Must have a name"],
+    unique: true,
     trim: true,
   },
 

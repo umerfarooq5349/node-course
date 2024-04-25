@@ -13,5 +13,7 @@ mongoose
   .catch((err) => console.log(err));
 
 app.listen(port, () => {
-  console.log(`App is running on port: ${port}`);
+  console.log(
+    `App is running on port: ${port} in ${process.env.NODE_ENV} environment`
+  );
 });

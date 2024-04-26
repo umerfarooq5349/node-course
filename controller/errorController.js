@@ -13,6 +13,12 @@ module.exports = (err, req, res, next) => {
     if (error.name === "CastError") {
       error = handleDBCastError(error);
     }
+    if (error.name === "ValidatorError") {
+      error = handleDBValidatorError(error);
+    }
+    if (error.code === 11000) {
+      error = handleDuplicateDBError(error);
+    }
     prodError(error, res);
   }
 };
@@ -43,4 +49,13 @@ const prodError = (err, res) => {
 const handleDBCastError = (error) => {
   const message = `Invalid ${error.path}: ${error.value}.`;
   return new AppError(message, 404);
+};
+
+const handleDBValidatorError = (error) => {
+  return new AppError(error.message, 404);
+};
+
+const handleDuplicateDBError = (error) => {
+  const message = `Feild duplicate error`;
+  return new AppError(error.message, 404);
 };

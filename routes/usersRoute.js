@@ -1,4 +1,4 @@
-const Express = require('express');
+const Express = require("express");
 const {
   getAllUsers,
   getUser,
@@ -6,10 +6,16 @@ const {
   updateUser,
 
   deleteUser,
-} = require('../controller/userControllers');
+} = require("../controller/userControllers");
+const { signupUser } = require("./../controller/authController");
+
 const router = Express.Router();
 
-router.route('/').get(getAllUsers).post(addUser);
-router.route('/:_id').get(getUser).patch(updateUser).delete(deleteUser);
+// fully rest api structure url not changes on function changes
+router.route("/").get(getAllUsers).post(addUser);
+router.route("/:_id").get(getUser).patch(updateUser).delete(deleteUser);
+
+// api urls changes
+router.post("/signup", signupUser);
 
 module.exports = router;

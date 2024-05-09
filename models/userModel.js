@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 8,
+    select: false,
   },
   passwordConfrim: {
     type: String,
@@ -28,6 +29,7 @@ const userSchema = new mongoose.Schema({
       return el === this.password;
     },
     message: "Passwords are not the same",
+    select: false,
   },
   role: {
     type: String,
@@ -52,7 +54,6 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
 
   bcrypt.hash(this.password, 12, function (err, hash) {
-    // console.log(`error: ${err}\n password: ${this.password}\n hashed: ${hash}`);
     this.password = hash;
   });
 

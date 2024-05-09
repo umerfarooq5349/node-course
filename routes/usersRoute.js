@@ -7,7 +7,7 @@ const {
 
   deleteUser,
 } = require("../controller/userControllers");
-const { signupUser } = require("./../controller/authController");
+const { signupUser, login } = require("./../controller/authController");
 
 const router = Express.Router();
 
@@ -17,5 +17,6 @@ router.route("/:_id").get(getUser).patch(updateUser).delete(deleteUser);
 
 // api urls changes
 router.post("/signup", signupUser);
+router.post("/login", login);
 
 module.exports = router;

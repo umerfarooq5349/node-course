@@ -1,21 +1,22 @@
-const User = require('./../models/userModel');
+const catchAsync = require("../utils/catchAsync");
+const User = require("./../models/userModel");
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = catchAsync(async (req, res) => {
   const users = await User.find();
   res.status(200).json({
-    status: 'success',
+    status: "success",
     total: users.length,
     data: {
       users,
     },
   });
-};
+});
 
 const addUser = async (req, res) => {
   const newUser = await User.create(req.body);
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
       user: newUser,
     },
@@ -27,7 +28,7 @@ const getUser = async (req, res) => {
 
   if (id === undefined || !user) {
     res.status(404).json({
-      status: 'Failed to find',
+      status: "Failed to find",
       requestedAt: req.requestTime,
       data: {
         mgs: "Result doesn't exist",
@@ -35,7 +36,7 @@ const getUser = async (req, res) => {
     });
   }
   res.status(200).json({
-    status: 'success',
+    status: "success",
     requestedAt: req.requestTime,
     data: {
       user,
@@ -47,7 +48,7 @@ const updateUser = async (req, res) => {
   const id = req.params.id;
   if (id === undefined) {
     res.status(404).json({
-      status: 'Failed to find',
+      status: "Failed to find",
       data: {
         mgs: "Result doesn't exist",
       },
@@ -55,7 +56,7 @@ const updateUser = async (req, res) => {
   }
   const user = await User.findByIdAndUpdate(id, req.body, { new: true });
   res.status(200).json({
-    status: 'Record updated',
+    status: "Record updated",
     data: {
       user,
     },
@@ -66,7 +67,7 @@ const deleteUser = async (req, res) => {
   const id = req.params.id;
   if (id === undefined) {
     res.status(404).json({
-      status: 'Failed to find',
+      status: "Failed to find",
       data: {
         mgs: "Result doesn't exist",
       },
@@ -74,7 +75,7 @@ const deleteUser = async (req, res) => {
   }
   const user = await User.findByIdAndDelete(id);
   res.status(200).json({
-    status: 'Record deleted',
+    status: "Record deleted",
     data: {
       user,
     },

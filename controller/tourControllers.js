@@ -1,7 +1,10 @@
+const { promisify } = require("util");
 const Tour = require("./../models/toursModel");
 const ApiFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appErrors");
+const jwt = require("jsonwebtoken");
+const User = require("../models/userModel");
 
 // param middleware
 // const checkID = (req, res, next, val) => {
@@ -17,6 +20,70 @@ const AppError = require("../utils/appErrors");
 //   }
 //   next();
 // };
+
+//protect rout middleware
+
+const protected = catchAsync(async (req, res, next) => {
+  //geting token and check it is textUnderlinePosition:
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("some")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  // verify token
+  if (!token) {
+    return next(
+      new AppError("You are not logged in! Please log in to get access.", 401)
+    );
+  }
+
+  const decoded = await promisify(jwt.verify)(token, process.env.PRIVATE_KEY);
+  // console.log(decoded);
+
+  // check if user still exists
+  const logedIn_user = await User.findById(decoded.id);
+  if (!logedIn_user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  // check if user changed password after token issued
+
+  next();
+});
+
+const authurizedUser = catchAsync(async (req, res, next) => {
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("some")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  // verify token
+  if (!token) {
+    return next(new AppError("You are not logged in! ", 401));
+  }
+
+  const decoded = await promisify(jwt.verify)(token, process.env.PRIVATE_KEY);
+  // console.log(decoded);
+
+  // check if user still exists
+  const logedIn_user = await User.findById(decoded.id);
+
+  if (!logedIn_user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  const authurized_user = await User.findOne({ role: "admin" });
+  if (!authurized_user) {
+    return next(new AppError("You are not authorized", 401));
+  }
+  next();
+});
 
 // featured tours
 const featuredTours = (req, res, next) => {
@@ -194,6 +261,7 @@ const getMonthlyPlan = catchAsync(async (req, res, next) => {
 });
 
 module.exports = {
+  protected,
   getAllTours,
   getTour,
   addTour,
@@ -202,4 +270,5 @@ module.exports = {
   featuredTours,
   tourStats,
   getMonthlyPlan,
+  authurizedUser,
 };

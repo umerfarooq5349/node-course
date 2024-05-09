@@ -19,6 +19,9 @@ module.exports = (err, req, res, next) => {
     if (error.code === 11000) {
       error = handleDuplicateDBError(error);
     }
+    if (error.name === "JsonWebTokenError") {
+      error = handleJwtError(error);
+    }
     prodError(error, res);
   }
 };
@@ -57,5 +60,10 @@ const handleDBValidatorError = (error) => {
 
 const handleDuplicateDBError = (error) => {
   const message = `Feild duplicate error`;
+  return new AppError(error.message, 404);
+};
+
+const handleJwtError = (error) => {
+  const message = `Authentication error`;
   return new AppError(error.message, 404);
 };

@@ -1,3 +1,4 @@
+const AppError = require("../utils/appErrors");
 const catchAsync = require("../utils/catchAsync");
 const User = require("./../models/userModel");
 
@@ -23,17 +24,11 @@ const addUser = async (req, res) => {
   });
 };
 
-const getUser = async (req, res) => {
-  const user = await User.findById(req.params.id);
-
-  if (id === undefined || !user) {
-    res.status(404).json({
-      status: "Failed to find",
-      requestedAt: req.requestTime,
-      data: {
-        mgs: "Result doesn't exist",
-      },
-    });
+const getUser = catchAsync(async (req, res, next) => {
+  const id = req.params.id;
+  const user = await User.findOne(id);
+  if (!user) {
+    return next(new AppError("No User found", 404));
   }
   res.status(200).json({
     status: "success",
@@ -42,7 +37,7 @@ const getUser = async (req, res) => {
       user,
     },
   });
-};
+});
 
 const updateUser = async (req, res) => {
   const id = req.params.id;

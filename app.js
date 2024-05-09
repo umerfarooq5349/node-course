@@ -14,6 +14,7 @@ app.use(Express.json());
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  // console.log(res.header());
   next();
 });
 
